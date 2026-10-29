@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#8d1024">
+<title>ألوان الكناري | نظام إدارة المصنع</title>
+
+<style>
+:root {
+  --wine: #8d1024;
+  --red: #b51f35;
+  --gold: #e9b83e;
+  --bg: #f7f5f2;
+  --card: #ffffff;
+  --text: #302a2d;
+  --muted: #777;
+  --border: #e9e1df;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg,#fff,#fff5ed,#f4e5e7);
+}
+.login-card {
+  width: min(440px,100%);
+  text-align: center;
+  padding: 28px;
+  border-radius: 24px;
+  background: #ffffffed;
+  box-shadow: 0 15px 45px #57132118;
+  border: 1px solid var(--border);
+}
+.logo { width: 125px; height: 125px; object-fit: contain; }
+.login h1 { color: var(--wine); }
+.login p { color: var(--muted); line-height: 1.9; }
+
+.field { margin: 14px 0; text-align: right; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd2d0;
+  border-radius: 10px;
+  background: white;
+}
+.primary {
+  border: 0;
+  background: var(--wine);
+  color: white;
+  border-radius: 10px;
+  padding: 12px 17px;
+  font-weight: bold;
+}
+.primary:hover { background: var(--red); }
+.secondary {
+  border: 1px solid #ead9a8;
+  background: #fff7df;
+  color: #73520c;
+  border-radius: 10px;
+  padding: 10px 13px;
+}
+
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  min-height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 52px; height: 52px; object-fit: contain; }
+.brand strong { color: var(--wine); }
+.brand small { display: block; color: var(--muted); margin-top: 5px; }
+
+.layout { display: grid; grid-template-columns: 245px minmax(0,1fr); }
+.sidebar {
+  background: white;
+  border-left: 1px solid var(--border);
+  padding: 14px;
+  min-height: calc(100vh - 75px);
+}
+.nav-title { color: #aaa; font-size: 12px; padding: 12px 8px; }
+.navbtn {
+  display: block;
+  width: 100%;
+  text-align: right;
+  padding: 12px;
+  margin: 3px 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #555;
+}
+.navbtn:hover, .navbtn.active {
+  background: #f8e8eb;
+  color: var(--wine);
+  font-weight: bold;
+}
+.main {
+  padding: 24px;
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
+}
+.main::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  inset: 90px 250px 0 0;
+  background: url("logo.jpg") center center / min(55vw,550px) no-repeat;
+  opacity: .075;
+}
+.page-head { margin-bottom: 20px; }
+.page-head h2 { color: var(--wine); margin-top: 0; }
+.page-head p { color: var(--muted); font-size: 13px; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 14px;
+}
+.card {
+  background: #ffffffed;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 5px 20px #32101a08;
+}
+.stat-title { color: var(--muted); font-size: 12px; }
+.stat-number { color: var(--wine); font-size: 25px; font-weight: bold; margin: 12px 0; }
+.section-title { color: var(--wine); margin-top: 0; }
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 12px;
+}
+.quick {
+  text-align: right;
+  padding: 16px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+}
+.quick b { display: block; color: var(--wine); margin: 8px 0; }
+.quick small { color: var(--muted); line-height: 1.8; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 0 14px;
+}
+.form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td {
+  text-align: right;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+th { background: #f9eeee; color: var(--wine); }
+.table-wrap { overflow-x: auto; }
+
+.notice-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.notice-preview {
+  border: 1px solid #efd6d9;
+  background: linear-gradient(135deg,#fff9ed,#f8e8eb);
+  padding: 18px;
+  border-radius: 14px;
+  min-height: 180px;
+  line-height: 1.9;
+}
+.notice-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.notice-item {
+  padding: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 8px;
+}
+.toast {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #30262a;
+  color: white;
+  z-index: 20;
+}
+.footer-note { color: var(--muted); font-size: 12px; line-height: 1.9; }
+
+body.night {
+  --bg: #211b20;
+  --card: #30272e;
+  --text: #f8edf1;
+  --muted: #c4b5be;
+  --border: #4b3c44;
+}
+.night .topbar, .night .sidebar, .night .card,
+.night .quick, .night .notice-item { background: #30272e; color: var(--text); }
+.night .navbtn { color: #eee; }
+.night .navbtn.active { background: #512a37; color: #ffdce2; }
+.night .main::before { opacity: .11; }
+.night th { background: #49313b; }
+.night td { color: var(--text); }
+.night input, .night select, .night textarea {
+  background: #3a3038; color: white; border-color: #594751;
+}
+
+@media(max-width:900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .sidebar.open {
+    display: block;
+    position: fixed;
+    z-index: 10;
+    top: 75px;
+    right: 0;
+    bottom: 0;
+    width: 260px;
+    overflow: auto;
+    box-shadow: 0 0 30px #0002;
+  }
+  .stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .notice-layout { grid-template-columns: 1fr; }
+  .main { padding: 15px; }
+  .main::before { inset: 100px 10px 0; background-size: 75vw; }
+}
+@media(max-width:520px) {
+  .brand small { display: none; }
+  .brand img { width: 42px; height: 42px; }
+  .form-grid, .quick-grid { grid-template-columns: 1fr; }
+  .main { padding: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<section class="login" id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <img class="logo" src="logo.jpg" alt="شعار ألوان الكناري">
+    <h1>ألوان الكناري</h1>
+    <p>نظام إدارة الإنتاج والجودة والخلطات<br>لصناعات الأغذية</p>
+
+    <div class="field">
+      <label>المسمى الوظيفي</label>
+      <select id="job" required>
+        <option value="">اختر المسمى الوظيفي</option>
+        <option>الإدارة العليا</option>
+        <option>مشرف قسم</option>
+        <option>مسؤول الجودة</option>
+        <option>مسؤول الإنتاج</option>
+        <option>فني صيانة</option>
+        <option>عامل</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>اسم المستخدم</label>
+      <input id="username" required placeholder="اسم المستخدم">
+    </div>
+
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input id="password" type="password" required placeholder="كلمة المرور">
+    </div>
+
+    <button class="primary" style="width:100%">دخول إلى النظام</button>
+    <p class="footer-note">نسخة معاينة: تسجيل الدخول تجريبي وليس تحققًا آمنًا.</p>
+  </form>
+</section>
+
+<div id="system" class="hidden">
+  <header class="topbar">
+    <div class="brand">
+      <button class="secondary" id="menuBtn">☰</button>
+      <img src="logo.jpg" alt="الشعار">
+      <div>
+        <strong>ألوان الكناري</strong>
+        <small>نظام إدارة الإنتاج والتدقيق الفني</small>
+      </div>
+    </div>
+    <div>
+      <span id="welcome"></span>
+      <button class="secondary" id="themeBtn">الوضع الليلي</button>
+      <button class="secondary" id="logoutBtn">خروج</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="nav-title">القائمة الرئيسية</div>
+      <button class="navbtn active" data-page="dashboard">🏠 لوحة التحكم</button>
+      <button class="navbtn" data-page="notices">🔔 الإشعارات والتنبيهات</button>
+      <button class="navbtn" data-page="quality">✓ الجودة</button>
+      <button class="navbtn" data-page="recipes">♨ الخلطات والوصفات</button>
+      <button class="navbtn" data-page="production">▤ سجل الإنتاج</button>
+      <button class="navbtn" data-page="machines">⚙ الماكينات</button>
+      <button class="navbtn" data-page="downtime">⏱ التوقف والأعطال</button>
+      <button class="navbtn" data-page="maintenance">🔧 الصيانة</button>
+      <button class="navbtn" data-page="reports">📊 التقارير و OEE</button>
+      <div class="nav-title">الموارد البشرية والإدارة</div>
+      <button class="navbtn" data-page="employees">👤 الموظفون</button>
+      <button class="navbtn" data-page="leave">📅 الإجازات</button>
+      <button class="navbtn" data-page="penalties">⚑ الإنذارات والجزاءات</button>
+      <button class="navbtn" data-page="users">♙ المستخدمون والصلاحيات</button>
+      <button class="navbtn" data-page="settings">⚙ الإعدادات</button>
+    </aside>
+
+    <main class="main" id="content"></main>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let currentPage = "dashboard";
+let notices = [];
+let noticeIndex = 0;
+let darkManual = null;
+
+function notify(message) {
+  const t = $("#toast");
+  t.textContent = message;
+  t.classList.remove("hidden");
+  setTimeout(() => t.classList.add("hidden"), 2800);
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  })[ch]);
+}
+
+function heading(title, subtitle="إدارة ومتابعة بيانات المصنع") {
+  return `<div class="page-head">
+    <h2>${title}</h2><p>${subtitle}</p>
+  </div>`;
+}
+
+function panel(title, body) {
+  return `<section class="card"><h3 class="section-title">${title}</h3>${body}</section>`;
+}
+
+function field(label, placeholder="", type="text") {
+  return `<div class="field"><label>${label}</label>
+    <input type="${type}" placeholder="${placeholder}"></div>`;
+}
+
+function selectField(label, options) {
+  return `<div class="field"><label>${label}</label><select>
+    <option value="">اختر</option>
+    ${options.map(x => `<option>${x}</option>`).join("")}
+  </select></div>`;
+}
+
+function formPage(title, fields, buttonText="حفظ البيانات") {
+  return heading(title) +
+    panel("إدخال بيانات جديدة", `<form class="demoForm">
+      <div class="form-grid">${fields.join("")}</div>
+      <div class="form-actions">
+        <button class="primary">${buttonText}</button>
+        <button type="reset" class="secondary">مسح الحقول</button>
+      </div>
+    </form>`) +
+    panel("السجلات", `<p class="footer-note">
+      هذه مساحة معاينة. السجلات لا تُحفظ قبل ربط قاعدة البيانات.
+    </p>`);
+}
+
+function dashboard() {
+  return heading("لوحة التحكم","ملخص الإنتاج والجودة والماكينات") +
+  `<div class="stats">
+    <div class="card"><div class="stat-title">إنتاج اليوم</div><div class="stat-number">—</div><small>بانتظار البيانات</small></div>
+    <div class="card"><div class="stat-title">نسبة الجودة</div><div class="stat-number">—%</div><small>بانتظار الفحوصات</small></div>
+    <div class="card"><div class="stat-title">الماكينات العاملة</div><div class="stat-number">—</div><small>بانتظار الربط</small></div>
+    <div class="card"><div class="stat-title">وقت التوقف</div><div class="stat-number">—</div><small>بانتظار البلاغات</small></div>
+  </div>` +
+  panel("الوصول السريع", `<div class="quick-grid">
+    <button class="quick" data-jump="quality">✓ <b>فحص الجودة</b><small>نتائج الفحص والملاحظات</small></button>
+    <button class="quick" data-jump="recipes">♨ <b>الخلطات والوصفات</b><small>المكونات والكميات والاعتماد</small></button>
+    <button class="quick" data-jump="production">▤ <b>سجل الإنتاج</b><small>الوردية والإنتاج والهالك</small></button>
+    <button class="quick" data-jump="downtime">⏱ <b>بلاغ توقف</b><small>العطل والوقت والمشغل</small></button>
+    <button class="quick" data-jump="maintenance">🔧 <b>الصيانة</b><small>الطلبات والإجراءات</small></button>
+    <button class="quick" data-jump="reports">📊 <b>تقارير OEE</b><small>الإتاحة والأداء والجودة</small></button>
+  </div>`) +
+  panel("ملاحظة", `<p class="footer-note">الشعار يظهر كعلامة مائية خلف النظام. الأرقام غير فعلية. يجب ربط قاعدة بيانات آمنة قبل استخدام النظام في المصنع.</p>`);
+}
+
+function noticesPage() {
+  return heading("الإشعارات والتنبيهات","إنشاء إشعارات بالصور وتحديد الجمهور المستهدف") +
+  `<div class="notice-layout">
+    <section class="card">
+      <h3 class="section-title">إنشاء إشعار</h3>
+      <form id="noticeForm">
+        <div class="field"><label>عنوان الإشعار</label><input id="noticeTitle" required placeholder="عنوان الإشعار"></div>
+        <div class="field"><label>نص الإشعار</label><textarea id="noticeText" rows="4" required placeholder="اكتب تفاصيل الإشعار"></textarea></div>
+        <div class="field"><label>إرفاق صور متعددة</label><input id="noticeImages" type="file" accept="image/*" multiple></div>
+        <div class="field"><label>الجمهور المستهدف</label>
+          <select id="audience">
+            <option>جميع الموظفين</option><option>الإدارة العليا</option>
+            <option>مشرفو الأقسام</option><option>قسم الجودة</option>
+            <option>قسم الإنتاج</option><option>الصيانة</option><option>عمال الماكينات</option>
+          </select>
+        </div>
+        <button class="primary">إضافة الإشعار</button>
+        <button type="reset" class="secondary">تفريغ الحقول</button>
+      </form>
+      <p class="footer-note">الإشعارات هنا للمعاينة فقط، ولا تُرسل إلى الموظفين.</p>
+    </section>
+    <section class="card">
+      <h3 class="section-title">معاينة الإشعارات</h3>
+      <div class="notice-preview" id="noticePreview">لا توجد إشعارات بعد.</div>
+      <p>
+        <button class="secondary" id="prevNotice">السابق</button>
+        <button class="secondary" id="nextNotice">التالي</button>
+        <button class="secondary" id="deleteNotice">حذف</button>
+      </p>
+      <div id="noticeList"></div>
+    </section>
+  </div>`;
+}
+
+function renderNotices() {
+  const n = notices[noticeIndex];
+  $("#noticePreview").innerHTML = n
+    ? `<b style="color:var(--wine)">${escapeHTML(n.title)}</b>
+       <p>${escapeHTML(n.text)}</p>
+       <small>الجمهور: ${escapeHTML(n.audience)}</small><br>
+       ${n.images.map(src => `<img src="${src}" alt="صورة الإشعار">`).join("")}`
+    : "لا توجد إشعارات بعد.";
+
+  $("#noticeList").innerHTML = notices.map((x,i) =>
+    `<div class="notice-item">
+      <b>${escapeHTML(x.title)}</b>
+      <button class="secondary" data-show="${i}">عرض</button>
+    </div>`
+  ).join("");
+}
+
+function render(page) {
+  currentPage = page;
+  document.querySelectorAll(".navbtn").forEach(b =>
+    b.classList.toggle("active", b.dataset.page === page)
+  );
+
+  let html = "";
+  if (page === "dashboard") html = dashboard();
+  if (page === "notices") html = noticesPage();
+
+  if (page === "quality") html = formPage("الجودة", [
+    field("رقم التشغيلة","رقم التشغيلة"),
+    selectField("نوع الفحص",["مواد خام","أثناء الإنتاج","منتج نهائي","تعبئة وتغليف"]),
+    field("مسؤول الجودة","اسم الموظف"),
+    field("تاريخ الفحص","","date"),
+    selectField("نتيجة الفحص",["مطابق","غير مطابق","يحتاج مراجعة"]),
+    field("رقم الخلطة","رقم الوصفة"),
+    field("الملاحظات","الملاحظات")
+  ],"حفظ فحص الجودة");
+
+  if (page === "recipes") html = formPage("الخلطات والوصفات", [
+    field("اسم الوصفة","اسم الخلطة"),
+    field("رمز الوصفة","REC-001"),
+    field("رقم الإصدار","1"),
+    field("حجم الدفعة بالكيلو","100","number"),
+    field("المكوّن","اسم المادة"),
+    field("الكمية","الكمية ووحدة القياس"),
+    selectField("حالة الوصفة",["مسودة","بانتظار الاعتماد","معتمدة","موقوفة"]),
+    field("تعليمات التحضير","ملاحظات")
+  ],"إضافة وصفة");
+
+  if (page === "production") html = formPage("سجل الإنتاج", [
+    field("اسم العامل","اسم المشغل"),
+    selectField("الماكينة",["M-01","M-02","M-03"]),
+    selectField("الوردية",["صباحية","مسائية","ليلية"]),
+    field("تاريخ التشغيل","","date"),
+    field("ساعات التشغيل","عدد الساعات","number"),
+    field("كمية الإنتاج","الكمية","number"),
+    field("كمية الهالك","الكمية","number"),
+    field("الخلطة المستخدمة","اسم الوصفة")
+  ],"تسجيل الإنتاج");
+
+  if (page === "machines") html = formPage("الماكينات", [
+    field("اسم الماكينة","اسم الماكينة"),
+    field("رمز الماكينة","M-01"),
+    selectField("القسم",["الإنتاج","التعبئة والتغليف","المخزن"]),
+    selectField("حالة الماكينة",["تعمل","متوقفة","تحت الصيانة"]),
+    field("المشغل المسؤول","اسم الموظف")
+  ],"إضافة ماكينة");
+
+  if (page === "downtime") html = formPage("التوقف والأعطال", [
+    field("الماكينة","رمز الماكينة"),
+    field("اسم المشغل","اسم العامل"),
+    field("بداية التوقف","","datetime-local"),
+    field("عودة التشغيل","","datetime-local"),
+    selectField("سبب التوقف",["عطل ميكانيكي","عطل كهربائي","تغيير خلطة","تنظيف","نقص مواد","أخرى"]),
+    selectField("الأولوية",["عادية","عالية","طارئة"]),
+    field("تفاصيل العطل","وصف العطل")
+  ],"إرسال بلاغ التوقف");
+
+  if (page === "maintenance") html = formPage("الصيانة", [
+    field("الماكينة","رمز الماكينة"),
+    selectField("نوع الصيانة",["وقائية","تصحيحية","طارئة"]),
+    field("تاريخ الصيانة","","date"),
+    field("الفني المسؤول","اسم الفني"),
+    selectField("الأولوية",["عادية","عالية","طارئة"]),
+    selectField("حالة الطلب",["جديد","قيد العمل","بانتظار قطع غيار","مكتمل"]),
+    field("الإجراء المنفذ","تفاصيل الصيانة")
+  ],"إنشاء طلب صيانة");
+
+  if (page === "reports") html = heading("التقارير و OEE") +
+    panel("محددات التقرير", `<form class="demoForm">
+      <div class="form-grid">
+        ${field("من تاريخ","","date")}${field("إلى تاريخ","","date")}
+        ${selectField("الماكينة",["جميع الماكينات","M-01","M-02","M-03"])}
+        ${selectField("الوردية",["جميع الورديات","صباحية","مسائية","ليلية"])}
+      </div>
+      <button class="primary">عرض التقرير</button>
+    </form>`) +
+    panel("طريقة حساب OEE", `<p class="footer-note">
+      الإتاحة = زمن التشغيل ÷ زمن الإنتاج المخطط.<br>
+      الأداء = زمن الدورة المثالي × إجمالي الإنتاج ÷ زمن التشغيل.<br>
+      الجودة = الإنتاج الجيد ÷ إجمالي الإنتاج.<br>
+      OEE = الإتاحة × الأداء × الجودة.
+    </p>`);
+
+  if (page === "employees") html = formPage("الموظفون", [
+    field("اسم الموظف","الاسم الكامل"),field("الرقم الوظيفي","الرقم"),
+    selectField("القسم",["الإدارة","الجودة","الإنتاج","الصيانة","المخازن"]),
+    field("المسمى الوظيفي","المسمى"),field("رقم التواصل","الهاتف"),
+    selectField("الحالة",["على رأس العمل","إجازة","موقوف"])
+  ],"إضافة موظف");
+
+  if (page === "leave") html = formPage("الإجازات", [
+    field("اسم الموظف","اسم الموظف"),
+    selectField("نوع الإجازة",["سنوية","مرضية","طارئة","بدون راتب","أخرى"]),
+    field("من تاريخ","","date"),field("إلى تاريخ","","date"),
+    field("المدة بالأيام","عدد الأيام","number"),field("السبب","سبب الإجازة")
+  ],"تسجيل الإجازة");
+
+  if (page === "penalties") html = formPage("الإنذارات والجزاءات", [
+    field("اسم الموظف","اسم الموظف"),
+    selectField("نوع الإجراء",["تنبيه","إنذار أول","إنذار نهائي","جزاء إداري"]),
+    field("تاريخ الإجراء","","date"),field("سبب الإجراء","السبب"),
+    field("اسم المسؤول","المسؤول")
+  ],"تسجيل الإجراء");
+
+  if (page === "users") html = formPage("المستخدمون والصلاحيات", [
+    field("اسم الموظف","اسم الموظف"),field("اسم المستخدم","اسم الدخول"),
+    field("كلمة مرور مؤقتة","كلمة المرور","password"),
+    selectField("الدور",["الإدارة العليا","مشرف قسم","مسؤول الجودة","مسؤول الإنتاج","فني صيانة","عامل"]),
+    selectField("القسم",["الإدارة","الجودة","الإنتاج","الصيانة","المخازن"]),
+    selectField("الحالة",["فعال","موقوف"])
+  ],"إضافة مستخدم");
+
+  if (page === "settings") html = heading("الإعدادات") +
+    panel("المظهر",`<p>الوضع الليلي التلقائي من 6 مساءً إلى 6 صباحًا، ويمكن تغييره يدويًا.</p>
+    <button class="primary" id="settingsTheme">تبديل الوضع</button>`) +
+    panel("معلومات النظام",`<p class="footer-note">يجب ربط قاعدة بيانات آمنة وتسجيل دخول حقيقي قبل الاستخدام الفعلي.</p>`);
+
+  $("#content").innerHTML = html;
+
+  if (page === "notices") renderNotices();
+}
+
+$("#loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  $("#welcome").textContent = $("#username").value;
+  $("#loginScreen").classList.add("hidden");
+  $("#system").classList.remove("hidden");
+  render("dashboard");
+  notify("تم فتح معاينة التصميم");
+});
+
+document.addEventListener("click", e => {
+  const nav = e.target.closest("[data-page]");
+  if (nav) {
+    render(nav.dataset.page);
+    $("#sidebar").classList.remove("open");
+  }
+
+  const jump = e.target.closest("[data-jump]");
+  if (jump) render(jump.dataset.jump);
+
+  if (e.target.id === "menuBtn") $("#sidebar").classList.toggle("open");
+
+  if (e.target.id === "logoutBtn") {
+    $("#system").classList.add("hidden");
+    $("#loginScreen").classList.remove("hidden");
+  }
+
+  if (e.target.id === "themeBtn" || e.target.id === "settingsTheme") {
+    darkManual = !document.body.classList.contains("night");
+    document.body.classList.toggle("night", darkManual);
+  }
+
+  if (e.target.id === "prevNotice" && notices.length) {
+    noticeIndex = (noticeIndex - 1 + notices.length) % notices.length;
+    renderNotices();
+  }
+  if (e.target.id === "nextNotice" && notices.length) {
+    noticeIndex = (noticeIndex + 1) % notices.length;
+    renderNotices();
+  }
+  if (e.target.id === "deleteNotice" && notices.length) {
+    notices.splice(noticeIndex, 1);
+    noticeIndex = Math.max(0, Math.min(noticeIndex, notices.length - 1));
+    renderNotices();
+  }
+  if (e.target.dataset.show !== undefined) {
+    noticeIndex = Number(e.target.dataset.show);
+    renderNotices();
+  }
+});
+
+document.addEventListener("submit", async e => {
+  if (e.target.id === "noticeForm") {
+    e.preventDefault();
+
+    const files = [...$("#noticeImages").files];
+    const images = await Promise.all(files.map(file => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    })));
+
+    notices.push({
+      title: $("#noticeTitle").value,
+      text: $("#noticeText").value,
+      audience: $("#audience").value,
+      images
+    });
+
+    noticeIndex = notices.length - 1;
+    renderNotices();
+    e.target.reset();
+    notify("تمت إضافة الإشعار للمعاينة");
+  }
+
+  if (e.target.classList.contains("demoForm")) {
+    e.preventDefault();
+    notify("معاينة فقط: البيانات لم تُحفظ");
+  }
+});
+
+function automaticTheme() {
+  if (darkManual === null) {
+    const hour = new Date().getHours();
+    document.body.classList.toggle("night", hour >= 18 || hour < 6);
+  }
+}
+automaticTheme();
+setInterval(automaticTheme, 60000);
+</script>
+</body>
+</html>
